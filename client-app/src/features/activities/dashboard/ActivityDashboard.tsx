@@ -1,12 +1,13 @@
+import { observer } from "mobx-react-lite";
 import React from "react";
 import { Grid } from "semantic-ui-react";
-import { Activity } from "../../../app/models/activity";
+import { useStore } from "../../../app/stores/store";
 import ActivityDatails from "../details/ActivityDetails";
 import ActivityForm from "../form/ActivityForm";
 import ActivityList from "./ActivityList";
 
+/* 改用 MobX 存在 activityStore 裡面
 interface Props{
-    activities:Activity[];
     selectedActivity: Activity | undefined;
     selectActivity: (id: string) => void;
     cancelSelectActivity:() =>void;
@@ -14,46 +15,29 @@ interface Props{
     openForm:(id:string) => void;
     closeForm:()=>void;
     createOrEdit:(activity:Activity) =>void;
+    activities:Activity[];
     deleteActivity:(id: string) => void;
+    submitting: boolean;
 }
+*/
 
-export default function ActivityDashboard({
-    activities, 
-    selectedActivity,
-    selectActivity, 
-    cancelSelectActivity,
-    editMode,
-    openForm,
-    closeForm,
-    createOrEdit,
-    deleteActivity}:Props){
+// export default function ActivityDashboard({activities, selectedActivity, selectActivity, cancelSelectActivity, editMode, openForm, closeForm, createOrEdit, deleteActivity, submitting}:Props){
+//用一個 observer() 把全部包起來
+export default observer(function ActivityDashboard(){
+    const {activityStore} = useStore();
+    const {selectedActivity, editMode} = activityStore;
+   
     return(
         <Grid>
             <Grid.Column width='10'>
-                <ActivityList activities={activities} 
-                    selectActivity={selectActivity} 
-                    deleteActivity={deleteActivity}/>
+                <ActivityList />
             </Grid.Column>
             <Grid.Column width='6'>
                 {selectedActivity && !editMode &&
-                <ActivityDatails 
-                    activity={selectedActivity}
-                    cancelSelectActivity={cancelSelectActivity}
-                    openForm={openForm}
-                />}   
+                <ActivityDatails />}   
                 {editMode &&
-                <ActivityForm closeForm={closeForm} activity={selectedActivity} createOrEdit={createOrEdit}/>}
+                <ActivityForm />}
             </Grid.Column>
-            
-            {/* 
-            用已建立的 ActivityList 取代這串
-            <List>
-                {activities.map(activity => (
-                    <List.Item key={activity.id}>
-                    {activity.title}
-                    </List.Item>
-                ))}
-            </List> */}
         </Grid>
     )
-}
+})
